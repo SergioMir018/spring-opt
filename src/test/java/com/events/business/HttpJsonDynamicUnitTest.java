@@ -50,10 +50,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import org.springframework.web.context.WebApplicationContext;
 
-/**
- *
- * @author abhimanyusingh
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
 @WebAppConfiguration
@@ -62,8 +58,6 @@ public class HttpJsonDynamicUnitTest {
 
     private static final MediaType CONTENT_TYPE_JSON = MediaType.APPLICATION_JSON_UTF8;
     private static final MediaType CONTENT_TYPE_TEXT = MediaType.TEXT_PLAIN;
-
-    private static HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -77,7 +71,7 @@ public class HttpJsonDynamicUnitTest {
 
     @Autowired
     public void setConverters(HttpMessageConverter<?>[] converters) {
-        mappingJackson2HttpMessageConverter = Stream.of(converters)
+        HttpMessageConverter mappingJackson2HttpMessageConverter = Stream.of(converters)
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
                 .findAny()
                 .orElse(null);
@@ -86,7 +80,7 @@ public class HttpJsonDynamicUnitTest {
     }
 
     List<String> httpJsonFiles = new ArrayList<>();
-    Map<String, String> httpJsonAndTestname = new HashMap<>();
+    Map<String, String> httpJsonAndTestName = new HashMap<>();
     Map<String, Long> executionTime = new HashMap<>();
     Map<String, Pair<Pair<String, String>, Pair<String, String>>> testFailures = new HashMap<>();
 
@@ -154,7 +148,7 @@ public class HttpJsonDynamicUnitTest {
 
                 for (int i = 0; i < testnames.size(); i++) {
                     String[] testname = testnames.get(i).split(": ");
-                    httpJsonAndTestname.put(testname[0], testname[1]);
+                    httpJsonAndTestName.put(testname[0], testname[1]);
                 }
 
                 AtomicInteger processedRequestCount = new AtomicInteger(1);
@@ -580,13 +574,13 @@ public class HttpJsonDynamicUnitTest {
                         try {
                             if (! failedTestFiles.contains(filename)) {
                                 writer.write(String.format("    <testcase name=\"%s\" classname=\"%s\" time=\"%f\"/>\n",
-                                        httpJsonAndTestname.get(filename),
+                                        httpJsonAndTestName.get(filename),
                                         this.getClass().getName(),
                                         executionTime.get(filename) / 1000.0f));
                             } else {
                                 writer.write(String.format("    <testcase name=\"%s\" classname=\"%s\" time=\"%f\">\n"
                                         + "        <failure>\n        </failure>\n    </testcase>\n",
-                                        httpJsonAndTestname.get(filename),
+                                        httpJsonAndTestName.get(filename),
                                         this.getClass().getName(),
                                         executionTime.get(filename) / 1000.0f));
                             }
@@ -683,7 +677,7 @@ public class HttpJsonDynamicUnitTest {
                         try {
                             writer.write(String.format("    <testcase name=\"%s\" classname=\"%s\" time=\"%f\">\n"
                                     + "        <failure>\n        </failure>\n    </testcase>\n",
-                                    httpJsonAndTestname.get(filename),
+                                    httpJsonAndTestName.get(filename),
                                     this.getClass().getName(),
                                     0.0f));
                         } catch (IOException ex) {
